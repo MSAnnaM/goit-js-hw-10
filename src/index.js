@@ -25,16 +25,12 @@ const breedEvent = () => {
 
 const idEvent = e => {
   load.classList.replace('is-hidden', 'loader');
-  selectBreed.classList.add('is-hidden');
- catInfo.classList.add('is-hidden');
   const breedId = e.target.value;
   fetchCatByBreed(breedId)
     .then(data => {
-      
       catInfo.innerHTML = catTexte(data);
       load.classList.replace('loader','is-hidden' );
-      selectBreed.classList.add('is-hidden');
-      catInfo.classList.remove('is-hidden');
+            catInfo.classList.remove('is-hidden');
     })
     .catch(error => console.log(error));
 };
