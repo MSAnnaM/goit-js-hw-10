@@ -1,32 +1,40 @@
 import { fetchBreeds, fetchCatByBreed } from './cat-api.js';
-
+import './styles.css';
 import SlimSelect from 'slim-select';
+import 'slim-select/dist/slimselect.css';
 
 const selectBreed = document.querySelector('.breed-select');
 const load = document.querySelector('.loader');
 const errorMesage = document.querySelector('.error');
 const catInfo = document.querySelector('.cat-info');
 
-new SlimSelect({
-  select: '#single',
-  settings: {
-    allowDeselect: true,
-  },
-});
-
-selectBreed.id = 'single';
+load.classList.replace('loader', 'is-hidden');
+errorMesage.classList.add('is-hidden');
+catInfo.classList.add('is-hidden');
 
 const breedEvent = () => {
-  fetchBreeds()
-    .then(data => (selectBreed.innerHTML = selectChoise(data)))
-    .catch(error => console.log(error));
+  let selectData = [];
+  fetchBreeds().then(data => {
+    data.forEach(el => selectData.push({ text: el.name, value: el.id }));
+    const slim = new SlimSelect({
+      select: selectBreed,
+      data: selectData,
+    });
+  });
 };
+
 const idEvent = e => {
+  load.classList.replace('is-hidden', 'loader');
+  selectBreed.classList.add('is-hidden');
+ catInfo.classList.add('is-hidden');
   const breedId = e.target.value;
   fetchCatByBreed(breedId)
     .then(data => {
-      console.log(data);
+      
       catInfo.innerHTML = catTexte(data);
+      load.classList.replace('loader','is-hidden' );
+      selectBreed.classList.add('is-hidden');
+      catInfo.classList.remove('is-hidden');
     })
     .catch(error => console.log(error));
 };
@@ -40,10 +48,5 @@ const catTexte = arr => {
     .join('');
 };
 
-const selectChoise = arr => {
-  return arr
-    .map(({ id, name }) => `<option value="${id}">${name}</option>`)
-    .join('');
-};
 window.addEventListener('load', breedEvent);
 selectBreed.addEventListener('change', idEvent);
